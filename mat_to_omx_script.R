@@ -1,4 +1,7 @@
 # Functions ----------------------------------------------------------------
+
+### Add functionality for multiple directories
+
 ## Required Package 
 library(stringr)
 
@@ -33,12 +36,12 @@ mat_to_omx_line <- function(mat_file,
   omx_file <- str_replace(mat_file,
                           ".mat",
                           ".omx")
-    
+  
   line <- paste0('CONVERTMAT FROM="',
                  input_dir,
                  mat_file,
                  '" TO="',
-                 input_dir,
+                 output_dir,
                  omx_file,
                  '" FORMAT=OMX COMPRESSION=0')
   
@@ -71,7 +74,9 @@ mat_to_omx_script <- function(mat_files,
   script_path <- paste0(script_dir, script_name)
   
   if(overwrite == TRUE){
-    file.remove(script_path)
+    if(file.exists(script_path) == TRUE){
+      file.remove(script_path)
+    }
   }
   
   for (file in mat_files) {
@@ -84,22 +89,50 @@ mat_to_omx_script <- function(mat_files,
   }
 }
 
-
 # Testing -----------------------------------------------------------------
 
-script_name <- "testing.s"
-script_dir  <- "H:\\PMT_SERPM7\\"
-input_dir   <- "C:\\SERPM7\\Output\\Out-2010R\\ctramp\\"
-output_dir  <- "H:\\PMT_SERPM7\\" 
-mat_file    <- c("TAZ_Demand_EA.mat",
-                 "TAZ_Demand_AM.mat",
-                 "TAZ_Demand_MD.mat",
-                 "TAZ_Demand_PM.mat",
-                 "TAZ_Demand_EV.mat")
+#' Set Up
+#' These 5 lines set up the function.
+
+#Name of the Script
+script_name <- "TDM_SetUp.s"
+
+# Where the script will be saved
+script_dir  <- "C:\\Users\\NH2user\\Documents\\"
+# Where the MAT files are stored
+input_dir   <- "C:\\FSUTMS\\FLSWM_V7.2_Clean\\Base\\SIS2018\\Output\\"
+
+# Where the OMX Files are saved
+output_dir  <- "C:\\Users\\NH2user\\Documents\\TDM_Scripts\\" 
+
+# Mat files to convert
+# currently the file extensions must be lowercase, 
+# i'll be patching this eventually
+mat_file    <- c("CONGSKIM.mat")
 
 mat_to_omx_script(mat_file,
                   script_name,
                   script_dir,
                   input_dir,
+                  output_dir)
+
+#' To convert MATs from multiple directories, (i.e future and base year)
+#' multiple version of `mat_to_omx_script` need to be run. input_dir and 
+#' mat_file nee to be redefined before each run as well as setting 
+#' overwrite to FALSE.  For some a differnt output director may be desired as 
+#' well, especially when MAT files are consistently named in base and future 
+#' year scenarious.
+#' 
+#' See below.
+#' 
+
+input_dir   <- "C:\\FSUTMS\\FLSWM_V7.2_Clean\\Base\\SIS2045\\Output\\"
+output_dir  <- "C:\\Users\\NH2user\\Documents\\TDM_Scripts\\SIS2045\\" 
+mat_file    <- c("CONGSKIM.mat")
+mat_to_omx_script(mat_file,
+                  script_name,
+                  script_dir,
+                  input_dir,
                   output_dir,
-                  overwrite = TRUE)
+                  overwrite = FALSE)
+
